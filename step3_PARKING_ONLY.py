@@ -8,7 +8,27 @@ import FWCore.ParameterSet.Config as cms
 from Configuration.Eras.Era_Run3_2025_cff import Run3_2025
 from Configuration.ProcessModifiers.premix_stage2_cff import premix_stage2
 
-process = cms.Process('HLT',Run3_2025,premix_stage2)
+import sys
+
+if len(sys.argv) < 4:
+    raise RuntimeError("Usage: cmsRun step3_PARKING.py <compression> <level> <num_events> <basedir>")
+
+if sys.argv[1] not in ["LZMA", "ZLIB", "LZ4", "ZSTD"]:
+    raise RuntimeError(f"Compression must be either LZMA, ZLIB, LZ4, or ZSTD. Input was {sys.argv[1]}")
+
+if int(sys.argv[2]) < 0 or int(sys.argv[2]) > 9:
+    raise RuntimeError(f"Compression level must be between 0 and 9. Input was {sys.argv[2]}")
+
+if int(sys.argv[3]) <= 0:
+    raise RuntimeError(f"Number of events must be greater than 0. Input was {sys.argv[3]}")
+
+compression = sys.argv[1]
+level = int(sys.argv[2])
+num_events = int(sys.argv[3])
+basedir = sys.argv[4]
+
+
+process = cms.Process('PARKING',Run3_2025,premix_stage2)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -27,33 +47,13 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100),
+    input = cms.untracked.int32(num_events),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('file:step1.root'),
-    inputCommands = cms.untracked.vstring(
-        'keep *',
-        'drop *_genParticles_*_*',
-        'drop *_genParticlesForJets_*_*',
-        'drop *_kt4GenJets_*_*',
-        'drop *_kt6GenJets_*_*',
-        'drop *_iterativeCone5GenJets_*_*',
-        'drop *_ak4GenJets_*_*',
-        'drop *_ak7GenJets_*_*',
-        'drop *_ak8GenJets_*_*',
-        'drop *_ak4GenJetsNoNu_*_*',
-        'drop *_ak8GenJetsNoNu_*_*',
-        'drop *_genCandidatesForMET_*_*',
-        'drop *_genParticlesForMETAllVisible_*_*',
-        'drop *_genMetCalo_*_*',
-        'drop *_genMetCaloAndNonPrompt_*_*',
-        'drop *_genMetTrue_*_*',
-        'drop *_genMetIC5GenJs_*_*'
-    ),
+    fileNames = cms.untracked.vstring('file:step3_RAWSIM_UNCOMP.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -98,10 +98,29 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Daq director
 
+# process.EvFDaqDirector = cms.Service( "EvFDaqDirector",
+#     baseDir = cms.untracked.string( "." ),
+#     buBaseDir = cms.untracked.string( "." ),
+#     buBaseDirsAll = cms.untracked.vstring(  ),
+#     buBaseDirsNumStreams = cms.untracked.vint32(  ),
+#     runNumber = cms.untracked.uint32( 386925 ),
+#     useFileBroker = cms.untracked.bool( True ),
+#     fileBrokerHostFromCfg = cms.untracked.bool( True ),
+#     fileBrokerHost = cms.untracked.string( "InValid" ),
+#     fileBrokerPort = cms.untracked.string( "8080" ),
+#     fileBrokerKeepAlive = cms.untracked.bool( True ),
+#     fileBrokerUseLocalLock = cms.untracked.bool( True ),
+#     fuLockPollInterval = cms.untracked.uint32( 2000 ),
+#     outputAdler32Recheck = cms.untracked.bool( False ),
+#     directorIsBU = cms.untracked.bool( False ),
+#     hltSourceDirectory = cms.untracked.string( "" ),
+#     mergingPset = cms.untracked.string( "" )
+# )
+
 process.EvFDaqDirector = cms.Service("EvFDaqDirector",
   runNumber= cms.untracked.uint32(1),
-  baseDir = cms.untracked.string("."),
-  buBaseDir = cms.untracked.string("."),
+  baseDir = cms.untracked.string("./" + basedir),
+  buBaseDir = cms.untracked.string("./" + basedir),
   # HLTD picks up HLT configuration and fffParameters.jsn from hltSourceDirectory (copied by newHiltonMenu.py)
   hltSourceDirectory = cms.untracked.string(""),
   directorIsBU = cms.untracked.bool(True),
@@ -129,18 +148,6 @@ process.PREMIXRAWoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0)
 )
 
-process.FEVTDebugOutput = cms.OutputModule("PoolOutputModule",
-    compressionAlgorithm = cms.untracked.string('LZMA'),
-    compressionLevel = cms.untracked.int32(4),
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW'),
-        filterName = cms.untracked.string('')
-    ),
-    fileName = cms.untracked.string('file:step3.root'),
-    outputCommands = process.FEVTDEBUGEventContent.outputCommands,
-    splitLevel = cms.untracked.int32(0)
-)
-
 # Additional output definition
 process.RAWoutput = cms.OutputModule("PoolOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
@@ -159,43 +166,30 @@ process.RAWoutput = cms.OutputModule("PoolOutputModule",
 
 process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
-    compressionLevel = cms.untracked.int32(0),
+    compressionLevel = cms.untracked.int32(4),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM-RAW'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:step3_RAWSIM_UNCOMP.root'),
-    outputCommands = cms.untracked.vstring( 'drop *',
-      'keep FEDRawDataCollection_rawDataCollector_*_*',
-      'keep GlobalObjectMapRecord_hltGtStage2ObjectMap_*_*',
-      'keep edmTriggerResults_*_*_*',
-      'keep triggerTriggerEvent_*_*_*' ),
+    fileName = cms.untracked.string('file:step3_RAWSIM.root'),
+    outputCommands = process.RAWSIMEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
 
 process.ParkingLikeOutput = cms.OutputModule( "GlobalEvFOutputModule",
-    use_compression = cms.untracked.bool( True ),
-    compression_algorithm = cms.untracked.string( "ZSTD" ),
-    compression_level = cms.untracked.int32( 3 ),
+    use_compression = cms.untracked.bool( False if level == 0 else True ),
+    compression_algorithm = cms.untracked.string( compression ),
+    compression_level = cms.untracked.int32( level ),
+    # dataset = cms.untracked.PSet(
+    #     dataTier = cms.untracked.string( "GEN-SIM-RAW" ),
+    #     filterName = cms.untracked.string( "" )
+    # ),
     outputCommands = cms.untracked.vstring( 'drop *',
       'keep FEDRawDataCollection_rawDataCollector_*_*',
       'keep GlobalObjectMapRecord_hltGtStage2ObjectMap_*_*',
       'keep edmTriggerResults_*_*_*',
       'keep triggerTriggerEvent_*_*_*' ),
     psetMap = cms.untracked.InputTag( "hltPSetMap" ),
-)
-
-process.SingleOutput = cms.OutputModule("PoolOutputModule",
-    compressionAlgorithm = cms.untracked.string('ZSTD'),
-    compressionLevel = cms.untracked.int32(3),
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW'),
-        filterName = cms.untracked.string('')
-    ),
-    fileName = cms.untracked.string('file:step3_TP.root'),
-    outputCommands = cms.untracked.vstring('drop *',
-                                                            'keep TrackingParticles_mixData_MergedTrackTruth_HLT'),
-    splitLevel = cms.untracked.int32(99)
 )
 
 # Other statements
@@ -214,21 +208,17 @@ process.PREMIXRAWoutput_step = cms.EndPath(process.PREMIXRAWoutput)
 process.RAWoutput_step = cms.EndPath(process.RAWoutput)
 process.RAWSIMoutput_step = cms.EndPath(process.RAWSIMoutput)
 process.ParkingLikeOutput_step = cms.EndPath(process.ParkingLikeOutput)
-process.SingleOutput_step = cms.EndPath(process.SingleOutput)
-process.FEVTDebugOutput_step = cms.EndPath(process.FEVTDebugOutput)
 
 # Schedule definition
 # process.schedule imported from cff in HLTrigger.Configuration
-process.schedule.insert(0, process.digitisation_step)
-process.schedule.insert(1, process.datamixing_step)
-process.schedule.insert(2, process.L1simulation_step)
-process.schedule.insert(3, process.digi2raw_step)
+# process.schedule.insert(0, process.digitisation_step)
+# process.schedule.insert(1, process.datamixing_step)
+# process.schedule.insert(2, process.L1simulation_step)
+# process.schedule.insert(3, process.digi2raw_step)
 # process.schedule.extend([process.endjob_step,process.PREMIXRAWoutput_step,process.RAWoutput_step])
 # process.schedule.extend([process.endjob_step,process.RAWSIMoutput_step])
 # process.schedule.extend([process.endjob_step,process.RAWoutput_step])
-# process.schedule.extend([process.endjob_step,process.ParkingLikeOutput_step])
-# process.schedule.extend([process.endjob_step,process.SingleOutput_step])
-process.schedule.extend([process.endjob_step,process.FEVTDebugOutput_step])
+process.schedule.extend([process.endjob_step,process.ParkingLikeOutput_step])
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
