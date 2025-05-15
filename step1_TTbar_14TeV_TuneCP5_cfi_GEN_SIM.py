@@ -26,7 +26,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10),
+    input = cms.untracked.int32(5000),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
@@ -82,7 +82,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:step1.root'),
+    fileName = cms.untracked.string('file:../store/step1_TTBar_Run3.root'),
     outputCommands = process.FEVTDEBUGEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -170,6 +170,10 @@ for path in process.paths:
 
 
 # Customisation from command line
+
+#Setup FWK for multithreaded
+process.options.numberOfThreads = 30
+process.options.numberOfStreams = 0
 
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete

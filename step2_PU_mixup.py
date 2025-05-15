@@ -28,7 +28,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10),
+    input = cms.untracked.int32(5000),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
@@ -84,7 +84,7 @@ process.PREMIXoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('PREMIX'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:step2.root'),
+    fileName = cms.untracked.string('file:../store/step2_PUPremix_Run3.root'),
     outputCommands = process.PREMIXEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
