@@ -115,7 +115,7 @@ process.RAWoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string(f'file:../store/uncompressed/step3_RAW_TTRee_{num_events}.root'),
+    fileName = cms.untracked.string(f'file:../store/uncompressed/step3_RAW_TTree_{num_events}.root'),
     outputCommands = cms.untracked.vstring(
     'drop *',
     'keep FEDRawDataCollection_rawDataCollector_*_*'
