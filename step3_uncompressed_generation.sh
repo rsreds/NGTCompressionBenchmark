@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Output CSV file
-output_file="../store/uncompressed/timing_results.csv"
+output_file="../store/uncompressed/mc_timing_results_generation.csv"
 echo "events,format,time_seconds" > "$output_file"
 
 # List of event counts

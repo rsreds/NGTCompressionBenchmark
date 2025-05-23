@@ -24,7 +24,7 @@ process.maxEvents = cms.untracked.PSet(
 # Output definition
 
 process.RAWRNTupleoutput = cms.OutputModule("RNTupleOutputModule",
-    compressionAlgorithm = cms.untracked.string('LZMA'),
+    compressionAlgorithm = cms.untracked.string('uncompressed'),
     compressionLevel = cms.untracked.int32(0),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW'),
