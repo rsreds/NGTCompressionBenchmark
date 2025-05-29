@@ -27,7 +27,7 @@ process.maxEvents = cms.untracked.PSet(
 # Output definition
 
 process.RAWRNTupleoutput = cms.OutputModule("PoolOutputModule",
-    compressionAlgorithm = cms.untracked.string('LZMA'),
+    compressionAlgorithm = cms.untracked.string('uncompressed'),
     compressionLevel = cms.untracked.int32(0),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW'),
@@ -37,7 +37,8 @@ process.RAWRNTupleoutput = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring(
     'drop *',
     'keep FEDRawDataCollection_rawDataCollector_*_*'
-    )
+    ),
+    fastCloning = cms.untracked.bool(False)
 )
 
 process.RNTupleRAWoutput_step = cms.EndPath(process.RAWRNTupleoutput)

@@ -34,7 +34,8 @@ process.RAWRNTupleoutput = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring(
     'drop *',
     'keep FEDRawDataCollection_rawDataCollector_*_*'
-    )
+    ),
+    fastCloning = cms.untracked.bool(False)
 )
 
 process.options.numberOfThreads = 30

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Output CSV file
-output_file="../results/fixed_data_timing_results_reading.csv"
+output_file="../results/fixed_mc_timing_results_reading.csv"
 # echo "events,format,time_seconds" > "$output_file"
 
 # List of event counts
@@ -11,7 +11,7 @@ for events in 1 10 100 1000 2000 3000 4000 5000; do
         for run in {1..10}; do
             echo "Running with $events events in $format format (run $run/10)..."
             log_file="../store/uncompressed/logs/log_step4_GenericConsumer_${format}_${events}_run${run}.txt"
-            filename="data_RAW_${format}_5000.root"
+            filename="mc_RAW_${format}_5000.root"
             # Run command, save log, and time it
             run_time=$( /usr/bin/time -f "%e" cmsRun step4_GenericConsumer_${format}.py "$filename" "$events" 2>&1 | tail -1 )
             echo "$run_time" > "$log_file"
