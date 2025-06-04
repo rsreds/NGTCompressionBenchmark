@@ -4,9 +4,11 @@ import matplotlib.pyplot as plt
 
 #type,events,format,algo,level,time_seconds,filesize_byte
 
-filename = '../results/mc_timing_results_recompress.csv'
+filename = '../results/complete_timing_results_recompress.csv'
 
 df = pd.read_csv(filename, sep=',', header=0)
+
+df = df[df['type'] == 'data']
 
 df_rntuple = df[df['format'] == 'RNTuple']
 df_ttree = df[df['format'] == 'TTree']
@@ -34,8 +36,8 @@ df_ttree = df[df['format'] == 'TTree']
 # step3,5000,TTree,96.10,9555456
 
 
-rntuple_uncompressed = {1: 8520, 10: 22996, 100: 169348, 1000: 1938592, 5000: 7914028}
-ttree_uncompressed = {1: 8652, 10: 22980, 100: 167908, 1000: 1922968, 5000: 7835084}
+rntuple_uncompressed = {1: 8520, 10: 22996, 100: 169348, 1000: 1592368, 5000: 7914028}
+ttree_uncompressed = {1: 8652, 10: 22980, 100: 167908, 1000: 1576692, 5000: 7835084}
 
 colors = {'LZMA': '#5790fc', 'ZLIB': '#f89c20', 'ZSTD': '#e42536', 'LZ4': '#7021dd'}
 
@@ -59,7 +61,8 @@ for algo in df_rntuple['algo'].unique():
 
 plt.xlabel('Compression Ratio')
 plt.ylabel('Throughput (MB/s)')
-plt.savefig("mc_compression_ratio_throughput_RNTuple.png")
+plt.title('p-p collsion data in RNTuple format')
+plt.savefig("data_compression_ratio_throughput_RNTuple.png")
 
 fig, ax = plt.subplots(figsize=(10, 6))
 # different colors for different compression algorithms
@@ -69,6 +72,6 @@ for algo in df_ttree['algo'].unique():
     for i, row in df_ttree[df_ttree['algo'] == algo].iterrows():
         ax.annotate(row['level'], (row['compression_ratio'], row['throughput_MBps']), textcoords="offset points", xytext=(-5, 5), ha='center', fontsize=8)
 plt.xlabel('Compression Ratio')
-ax.ticklabel_format(axis='x', useOffset=False, style='plain')
 plt.ylabel('Throughput (MB/s)')
-plt.savefig("mc_compression_ratio_throughput_TTree.png")
+plt.title('p-p collsion data in TTree format')
+plt.savefig("data_compression_ratio_throughput_TTree.png")

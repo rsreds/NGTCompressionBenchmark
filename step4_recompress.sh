@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Output CSV file
-output_file="../results/data_timing_results_recompress.csv"
+output_file="../results/complete_timing_results_recompress.csv"
 echo "type,events,format,algo,level,time_seconds,filesize_byte" > "$output_file"
 
 # List of event counts
 for events in 1 10 100 1000; do
-    for type in "data"; do
+    for type in "data" "mc"; do
         for format in "TTree" "RNTuple"; do
             for algo in "LZMA" "ZSTD" "ZLIB" "LZ4"; do
                 for level in 1 2 3 4 5 6 7 8 9; do
