@@ -46,7 +46,7 @@ process.consumer = cms.EDAnalyzer("GenericConsumer",
 process.output = cms.OutputModule("PoolOutputModule",
     compressionAlgorithm = cms.untracked.string(compression_algorithm),
     compressionLevel = cms.untracked.int32(compression_level),
-    fileName = cms.untracked.string(f'file:../store/compressed/mc/{output_filename}'),
+    fileName = cms.untracked.string(f'file:../store/compressed/phase2/{output_filename}'),
     fastCloning = cms.untracked.bool(False)
 )
 

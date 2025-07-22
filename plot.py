@@ -2,23 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Algorithm,Level,Events,Uncompressed,Compressed,Time,Filename,Iteration
-# LZMA,0,1000,12947519112,12947477664,828.5167472362518,step4_LZMA0_1000.root,0
-# LZMA,0,1000,12947593712,12947552264,832.8078739643097,step4_LZMA0_1000.root,1
-# ...
-# LZMA,0,1000,12947681679,12947640231,829.324205160141,step4_LZMA0_1000.root,7
-# LZMA,0,1000,12947596692,12947555244,829.3294920921326,step4_LZMA0_1000.root,8
-# LZMA,0,1000,12947562158,12947520710,831.7952272891998,step4_LZMA0_1000.root,9
-# LZMA,1,1000,12457274089,4516780443,965.3104631900787,step4_LZMA1_1000.root,0
-# LZMA,1,1000,12457293793,4517003733,964.7467947006226,step4_LZMA1_1000.root,1
-# LZMA,1,1000,12457295819,4516808341,963.7011907100677,step4_LZMA1_1000.root,2
-# ...
-# LZ4,9,1000,12539261108,5658615828,867.0716798305511,step4_LZ49_1000.root,8
-# LZ4,9,1000,12539313932,5658513079,868.8102641105652,step4_LZ49_1000.root,9
-# ZSTD,0,1000,12947592701,12947551253,832.9600019454956,step4_ZSTD0_1000.root,0
-# ZSTD,0,1000,12947589769,12947548321,839.8266215324402,step4_ZSTD0_1000.root,1
-# ...
-
 filename = "cmssw_bench_output.csv"
 
 df = pd.read_csv(filename)
@@ -27,16 +10,6 @@ result = df.groupby(['Algorithm', 'Level']).agg({'Compressed': ['mean', 'std'], 
 
 colors = {'LZMA': '#5790fc', 'ZLIB': '#f89c20', 'ZSTD': '#e42536', 'LZ4': '#7021dd'}
 
-# Plot
-# the compressed size by level for each algorithm
-# the uncompressed size by level for each algorithm
-# the time by level for each algorithm
-# the compression ratio by level for each algorithm
-# the throughput by level for each algorithm
-# a scatter plot of the throughput by compression ratio for each algorithm with level label on each point
-# save the plot as a png file in the plots directory
-
-# Compressed size by level for each algorithm
 
 # Filter out rows where Level is 0
 result_noL0 = result[result.index.get_level_values('Level') != 0]

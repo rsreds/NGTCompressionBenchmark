@@ -7,7 +7,7 @@ echo "type,events,format,algo,level,avg_time_seconds,stdev_time,avg_filesize_kB,
 # List of event counts
 for events in 500; do
     for type in "mc"; do
-        for format in "TTree" "RNTuple"; do
+        for format in "RNTuple"; do
             # do a few reads for caching using step4_GenericConsumer_<format>.py <file_in> <num_events> without logs
             echo "Running pre-caching for $type with $events events in $format format ..."
 

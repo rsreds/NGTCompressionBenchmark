@@ -10,7 +10,7 @@ if int(sys.argv[1]) < 0:
 
 num_events = int(sys.argv[1])
 
-process = cms.Process("SPLIT")
+process = cms.Process("RAW")
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring('file:../store/772d714f-fda4-4a82-a98d-e1a07d65d36a.root'),
