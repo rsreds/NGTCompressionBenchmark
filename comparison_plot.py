@@ -85,7 +85,7 @@ def plot_compression_vs_throughput(df, colors, data_format, x_lims, y_lims):
             annotations[algo].append(a)
 
     legend_title = f'{data_format}'
-    ax.legend(title=legend_title)
+    ax.legend(title=legend_title, loc='lower left')
     ax.set_xlabel('Compression Ratio')
     ax.set_ylabel('Throughput (MB/s)')
     ax.set_ylim(y_lims)
@@ -106,14 +106,16 @@ fig, ax, annotations = plot_compression_vs_throughput(
 annotations['LZMA'][0].set_text('1-3')
 annotations['LZMA'][0].set_ha('right')
 annotations['LZMA'][3].set_text('4-9')
-annotations['LZMA'][3].set_ha('right')   
+annotations['LZMA'][3].set_ha('right')
+
+
 fig.savefig(f"data_compression_ratio_throughput_RNTuple_{num_events}.pdf", bbox_inches='tight')
 fig.savefig(f"data_compression_ratio_throughput_RNTuple_{num_events}.png", bbox_inches='tight')
 
 fig, ax, annotations = plot_compression_vs_throughput(
     df_ttree_data,
     colors,
-    "RNTuple",
+    "TTree",
     x_lims,
     y_lims,
 )
@@ -132,7 +134,7 @@ fig.savefig(f"data_compression_ratio_throughput_TTree_{num_events}.png", bbox_in
 fig, ax, annotations = plot_compression_vs_throughput(
     df_rntuple_mc,
     colors,
-    "TTree",
+    "RNTuple",
     x_lims,
     y_lims,
 )
